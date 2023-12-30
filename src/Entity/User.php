@@ -7,10 +7,12 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource]
-class User
+#[ApiResource()]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -29,9 +31,8 @@ class User
     #[ORM\Column(length: 255)]
     private ?string $telephone = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
-
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
@@ -41,6 +42,7 @@ class User
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
+
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Formation::class, orphanRemoval: true)]
     private Collection $formations;
@@ -54,9 +56,34 @@ class User
         $this->candidatures = new ArrayCollection();
     }
 
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public function getRoles()
+    {
+        return $this->getRole()->toArray();
     }
 
     public function getNom(): ?string
@@ -118,7 +145,15 @@ class User
 
         return $this;
     }
-
+    /**
+     * Méthode getUsername qui permet de retourner le champ qui est utilisé pour l'authentification.
+     *
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->getUserIdentifier();
+    }
     public function getPassword(): ?string
     {
         return $this->password;
@@ -136,7 +171,7 @@ class User
         return $this->role;
     }
 
-    public function setRole(?Role $role): static
+    public function setRoles(?Role $role): static
     {
         $this->role = $role;
 
