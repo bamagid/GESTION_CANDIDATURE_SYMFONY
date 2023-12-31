@@ -10,6 +10,3 @@ kernel:
 
 api_login_check:
   path: /api/login
-
-api_logout:
-  path: /api/logout
