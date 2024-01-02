@@ -2,40 +2,55 @@
 
 namespace App\Entity;
 
+use JsonSerializable;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RoleRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: RoleRepository::class)]
 #[ApiResource(
+    normalizationContext: ['groups' => ['Role:read']],
+    denormalizationContext: ['groups' => ['Role:write']],
     operations: [
         new Get(),
         new GetCollection(),
-        new Put(),
         new Patch(),
-        new Post(denormalizationContext: ['Groups' => ['Role:write']]),
+        new Post(),
+        new Delete()
     ]
 )]
-class Role
+class Role implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['Role:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['Role:read', 'Role:write'])]
     private ?string $nomRole = null;
 
     #[ORM\OneToMany(mappedBy: 'role', targetEntity: User::class, orphanRemoval: true)]
+    #[Groups(['Role:read'])]
     private Collection $users;
-
+    public function jsonSerialize()
+    {
+        return [
+            "id" => $this->getId(),
+            "nomRole" => $this->getNomRole(),
+            "Users" => $this->getUsers()
+        ];
+    }
     public function __construct()
     {
         $this->users = new ArrayCollection();

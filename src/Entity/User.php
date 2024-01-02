@@ -2,67 +2,75 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Formation;
 use App\Entity\Candidature;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use JsonSerializable;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
+    normalizationContext: ['groups' => 'read:collection', 'read:User'],
+    denormalizationContext: ['Groups' => ['write:User']],
     operations: [
-        new Get(),
+        new Post(),
+        new Put(),
         new GetCollection(),
-        new Put(denormalizationContext: ['Groups' => ['User:put']]),
-        new Patch(denormalizationContext: ['Groups' => ['User:patch']]),
-        new Post(denormalizationContext: ['Groups' => ['User:write']]),
+        new Get(),
+        new Delete()
     ]
 )]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read:collection', 'read:User',])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['User:write'])]
+    #[Groups(['read:User', 'read:collection', 'write:User'])]
+    #[Assert\NotBlank]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['User:write'])]
+    #[Groups(['read:User', 'read:collection', 'write:User'])]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['User:write'])]
+    #[Groups(['read:User', 'read:collection', 'write:User'])]
     private ?string $adresse = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['User:write'])]
+    #[Groups(['read:User', 'read:collection', 'write:User'])]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['User:write'])]
+    #[Groups(['read:User', 'read:collection', 'write:User'])]
     private ?string $email = null;
     #[ORM\Column(length: 255)]
-    #[Groups(['User:write'])]
+    #[Groups(['write:User'])]
     private ?string $password = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['read:collection'])]
     private ?Role $role = null;
 
     #[ORM\Column]
+    #[Groups(['read:User'])]
     private ?\DateTimeImmutable $createdAt = null;
 
 
@@ -78,6 +86,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->candidatures = new ArrayCollection();
     }
 
+    public function jsonSerialize(): array
+    {
+        return [
+            'nom' => $this->getNom(),
+            'prenom' => $this->getPrenom(),
+            'adresse' => $this->getAdresse(),
+            'telephone' => $this->getTelephone(),
+            'email' => $this->getEmail(),
+            'role' => $this->getRole(),
+            'createdAt' => $this->getCreatedAt()->format('d F Y H:i:s'),
+            'formations' => $this->getFormations(),
+            'candidatures' => $this->getCandidatures(),
+        ];
+    }
 
     public function getId(): ?int
     {

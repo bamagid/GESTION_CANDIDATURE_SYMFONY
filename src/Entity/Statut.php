@@ -2,25 +2,46 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use App\Repository\StatutRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use JsonSerializable;
+use App\Entity\Candidature;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\StatutRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StatutRepository::class)]
-#[ApiResource]
-class Statut
+#[ApiResource(
+    normalizationContext: ['groups' => ['Statut:read', 'read:collection']],
+    denormalizationContext: ['groups' => ['Statut:write']],
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Patch(),
+        new Post(),
+        new Delete()
+    ]
+)]
+class Statut implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['Statut:read',])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['Statut:read', 'Statut:write'])]
     private ?string $nomStatut = null;
 
     #[ORM\OneToMany(mappedBy: 'statut', targetEntity: Candidature::class, orphanRemoval: true)]
+    #[Groups(['read:collection'])]
     private Collection $candidatures;
 
     public function __construct()
@@ -28,6 +49,14 @@ class Statut
         $this->candidatures = new ArrayCollection();
     }
 
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'nomStatut' => $this->getNomStatut(),
+            'candidatures' => $this->getCandidatures(),
+        ];
+    }
     public function getId(): ?int
     {
         return $this->id;

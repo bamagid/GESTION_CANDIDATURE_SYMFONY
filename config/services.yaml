@@ -15,6 +15,7 @@ services:
   # this creates a service per class whose id is the fully-qualified class name
   App\:
     resource: "../src/"
+    tags: ["controller.service_arguments"]
     exclude:
       - "../src/DependencyInjection/"
       - "../src/Entity/"
@@ -22,5 +23,15 @@ services:
       - "../src/Controller/"
       - "../src/EvenSubscribe/"
 
+  App\Controller\FormationController:
+    arguments:
+      $container: "@service_container"
+    public: true
+    tags: ["controller.service_arguments"]
+
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
+#  App\:
+#     resource: "../src/Controller/"
+#     public: true
+#     tags: ['controller.service_arguments']
