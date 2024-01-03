@@ -3,7 +3,7 @@ fos_rest:
   format_listener:
     rules:
       - {
-          path: ^/api,
+          path: ^/,
           prefer_extension: true,
           fallback_format: json,
           priorities: [json, html],

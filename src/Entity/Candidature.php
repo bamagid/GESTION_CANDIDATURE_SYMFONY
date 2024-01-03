@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new GetCollection(),
         new Get(
-            name: 'Liste des candidatures acceptees',
+            name: 'Liste_des_candidatures_acceptees',
             uriTemplate: '/accepted-candidatures',
             controller: FormationController::class . '::ListAcceptedCandidatures',
             description: 'Cet endpoint permet de recuperer les candidatures acceptées ',
@@ -29,7 +29,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             deserialize: false
         ),
         new Get(
-            name: 'Liste des candidatures refusees',
+            name: 'Liste_des_candidatures_refusees',
             uriTemplate: '/refused-candidatures',
             controller: FormationController::class . '::ListRefusedCandidatures',
             description: 'Cet endpoint permet de recuperer les candidatures acceptées dans une formations donnée ',

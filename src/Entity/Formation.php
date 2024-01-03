@@ -29,7 +29,7 @@ use JsonSerializable;
         new Delete(),
         new GetCollection(),
         new Get(
-            name: 'Accepter une candidature',
+            name: 'Accepter_une_candidature',
             uriTemplate: '/candidature/{id}/accepte',
             controller: FormationController::class . '::AcceptCandidature',
             requirements: ['id' => '\d+'],
@@ -38,7 +38,7 @@ use JsonSerializable;
             deserialize: false
         ),
         new Get(
-            name: 'Refuser une candidature',
+            name: 'Refuser_une_candidature',
             uriTemplate: '/candidature/{id}/refuse',
             controller: FormationController::class . '::RefuseCandidature',
             requirements: ['id' => '\d+'],
@@ -47,7 +47,7 @@ use JsonSerializable;
             deserialize: false
         ),
         new Get(
-            name: 'Liste des candidatures acceptees par formation',
+            name: 'Liste_des_candidatures_acceptees_par_formation',
             uriTemplate: '/formations/{id}/accepted-candidatures',
             controller: FormationController::class . '::FormationAcceptedCandidatures',
             requirements: ['id' => '\d+'],
@@ -56,7 +56,7 @@ use JsonSerializable;
             deserialize: false
         ),
         new Get(
-            name: 'Liste des candidatures refusees  par formation',
+            name: 'Liste_des_candidatures_refusees_par_formation',
             uriTemplate: '/formations/{id}/refused-candidatures',
             controller: FormationController::class . '::FormationRefusedCandidatures',
             requirements: ['id' => '\d+'],
@@ -65,7 +65,7 @@ use JsonSerializable;
             deserialize: false
         ),
         new Get(
-            name: 'cloturer une formation',
+            name: 'cloturer_une_formation',
             uriTemplate: '/formations/{id}/close',
             controller: FormationController::class . '::closeFormation',
             requirements: ['id' => '\d+'],

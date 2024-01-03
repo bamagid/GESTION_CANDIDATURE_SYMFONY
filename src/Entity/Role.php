@@ -104,8 +104,7 @@ class Role implements JsonSerializable
     }
     public function toArray()
     {
-        return [
-            $this->getNomRole()
-        ];
+        $role = $this->getNomRole();
+        return [$role];
     }
 }

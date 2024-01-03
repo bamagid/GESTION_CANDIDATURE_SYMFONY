@@ -5,6 +5,7 @@ namespace App\EventSubscriber;
 use App\Entity\Role;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -34,6 +35,7 @@ class UpdateUserSubscriber implements EventSubscriberInterface
             $id = basename($pathInfo);
             // Récupérer l'utilisateur à partir de l'ID
             $user = $entityManager->getRepository(User::class)->find($id);
+            $role = $entityManager->getRepository(Role::class)->find(2);
             // Vérifier si l'utilisateur existe
             if (!$user) {
                 $response = new JsonResponse(['error' => 'Utilisateur non trouvé.'], 404);
@@ -54,6 +56,7 @@ class UpdateUserSubscriber implements EventSubscriberInterface
             $user->setAdresse($data['adresse']);
             $user->setTelephone($data['telephone']);
             $user->setEmail($data['email']);
+            $user->setRoles($role);
             // Enregistrez les modifications dans la base de données
             $entityManager->flush();
             // Renvoyer une réponse
