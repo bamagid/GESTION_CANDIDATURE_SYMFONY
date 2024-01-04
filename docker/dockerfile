@@ -19,10 +19,8 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 composer install
 EXPOSE 80
 
 # Copier la configuration Apache personnalisée
-COPY ./apache.config /etc/apache2/sites-available/000-default.conf
+COPY ./docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
-# Modifier la configuration pour pointer vers le répertoire public
-RUN sed -i 's!/var/www/html!/var/www/html/public!g' \
-    /etc/apache2/sites-available/000-default.conf
+
 
 CMD ["apache2-foreground"]

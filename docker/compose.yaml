@@ -3,7 +3,7 @@ version: '3'
 services:
   app:
     build: .
-    image: simplon_candidature
+    image: magid/api_symfony
     container_name: Conteneur_Simplon_Candidature
     ports:
       - 9090:80
