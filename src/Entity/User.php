@@ -125,7 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
         // $this->plainPassword = null;
     }
 
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->getRole()->toArray();
     }

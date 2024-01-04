@@ -28,7 +28,7 @@ class RoleManageSubscriber implements EventSubscriberInterface
             $event->setResponse($response);
             $event->stopPropagation();
             return;
-        } else if (($events->isMethod("GET") && ((strpos($events->getPathInfo(), "/api/formations/") === 0) ||  ($events->getPathInfo() === "/api/formations" || $events->getPathInfo() === "/api")) || (($events->isMethod("POST") && ($events->getPathInfo() === "/api/login"))))) {
+        } else if (($events->isMethod("GET") && ((strpos($events->getPathInfo(), "/api/usersformations/") === 0) ||  ($events->getPathInfo() === "/api/formations" || $events->getPathInfo() === "/api")) || (($events->isMethod("POST") && ($events->getPathInfo() === "/api/login"))))) {
         } else {
             $response = new JsonResponse(['error' => "Cette route n'est accessible qu'aux admins"], 403);
             $event->setResponse($response);
