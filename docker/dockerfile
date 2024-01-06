@@ -20,7 +20,5 @@ EXPOSE 80
 
 # Copier la configuration Apache personnalisée
 COPY ./docker/apache.conf /etc/apache2/sites-available/000-default.conf
-
-
-
+ENTRYPOINT [ "bash","./docker/docker.sh" ]
 CMD ["apache2-foreground"]

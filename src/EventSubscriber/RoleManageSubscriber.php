@@ -21,23 +21,39 @@ class RoleManageSubscriber implements EventSubscriberInterface
         if ($this->securite->getUser()) {
             $role = $this->securite->getUser()->getRoles();
         }
-        $events = $event->getRequest();
-        if ($events->isMethod("POST") &&  $events->getPathInfo() === "/api/candidatures" && $role !== ["Candidat"]) {
-            // Récupérer les données JSON
+
+        $request = $event->getRequest();
+        $pathInfo = $request->getPathInfo();
+        $method = $request->getMethod();
+
+        if ($method === "POST" && $pathInfo === "/api/candidatures" && $role !== ["Candidat"]) {
+            // Seuls les candidats peuvent accéder à la route POST /api/candidatures
             $response = new JsonResponse(['error' => "Cette route n'est accessible qu'aux candidats"], 403);
             $event->setResponse($response);
             $event->stopPropagation();
             return;
-        } else if (($events->isMethod("GET") && ((strpos($events->getPathInfo(), "/api/usersformations/") === 0) ||  ($events->getPathInfo() === "/api/formations" || $events->getPathInfo() === "/api")) || (($events->isMethod("POST") && ($events->getPathInfo() === "/api/login"))))) {
-        } else {
-            $response = new JsonResponse(['error' => "Cette route n'est accessible qu'aux admins"], 403);
-            $event->setResponse($response);
-            $event->stopPropagation();
-            return;
         }
+        // } elseif (
+        //     (
+        //         ($method === "GET" && (
+        //             strpos($pathInfo, "/api/formations/") === 0 ||
+        //             $pathInfo === "/api/formations" ||
+        //             $pathInfo === "/api"
+        //         )) ||
+        //         ($method === "POST" && (
+        //             $pathInfo === "/api/login" ||
+        //             $pathInfo === "/api/users"
+        //         ))
+        //     )
+        // ) {
+        //     echo "";
+        // } else {
+        //     $response = new JsonResponse(['error' => "Cette route n'est accessible qu'aux admins"], 403);
+        //     $event->setResponse($response);
+        //     $event->stopPropagation();
+        //     return;
+        // }
     }
-
-
     public static function getSubscribedEvents(): array
     {
         return [
