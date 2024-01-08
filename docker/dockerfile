@@ -15,10 +15,12 @@ COPY . /var/www
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer install
+# RUN chmod -R 775 /var/www
 
 EXPOSE 80
 
 # Copier la configuration Apache personnalisée
 COPY ./docker/apache.conf /etc/apache2/sites-available/000-default.conf
+
 ENTRYPOINT [ "bash","./docker/docker.sh" ]
 CMD ["apache2-foreground"]

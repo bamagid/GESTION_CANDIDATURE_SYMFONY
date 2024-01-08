@@ -8,14 +8,14 @@ services:
     ports:
       - 8080:3306
     environment:
+      MYSQL_DATABASE: Candidature
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
     volumes:
-      - db-data:/var/lib/mysql:rw
+      - db-data:/var/lib/mysql
     networks:
       - dev
-
   phpmyadmin:
     image: phpmyadmin
     container_name: phpmyadmin_api
@@ -28,7 +28,7 @@ services:
       MYSQL_USERNAME: admin
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_PASSWORD: admin
-      PMA_ARBITRARY: 1
+      PMA_HOST: db
     depends_on:
       - db
     networks:
