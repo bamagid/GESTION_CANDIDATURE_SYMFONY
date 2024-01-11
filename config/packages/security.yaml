@@ -34,5 +34,7 @@ security:
     - { path: ^/api/users, method: POST, roles: PUBLIC_ACCESS }
     - { path: ^/api/user/, roles: PUBLIC_ACCESS }
     - { path: ^/api/login, roles: PUBLIC_ACCESS }
-    # - { path: ^/api/statuts, roles: Admin }
+    - { path: /api/formations, method: "GET", roles: PUBLIC_ACCESS }
+    - { path: ^/api/formations/, method: "GET", roles: PUBLIC_ACCESS }
+    # - { path: ^/api/statuts, roles: 1 }
     - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }

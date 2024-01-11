@@ -1,21 +1,63 @@
 version: '3'
 
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-15}-alpine
+  db:
+    image: mysql:8.2
+    container_name: mysql_api
+    restart: always
+    ports:
+      - 8080:3306
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+      MYSQL_DATABASE: Candidature
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+      - db-data:/var/lib/mysql
+    networks:
+      - dev
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin_api
+    restart: always
+    links:
+      - db
+    ports:
+      - 9000:80
+    environment:
+      MYSQL_USERNAME: admin
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_PASSWORD: admin
+      PMA_HOST: db
+    depends_on:
+      - db
+    networks:
+      - dev
 
+  app:
+    build:
+      context: .
+      dockerfile: docker/dockerfile
+    image: api_simplon_symfony
+    container_name: Conteneur_Simplon_Candidature
+    ports:
+      - 9090:80
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - dev
+  maildev:
+    image: maildev/maildev
+    container_name: maildev_docker_symfony
+    command: bin/maildev --web 80 --smtp 25 --hide-extensions STARTTLS
+    ports:
+      - "8081:80"
+    restart: always
+    networks:
+      - dev
+networks:
+  dev:
 volumes:
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
+  db-data:
